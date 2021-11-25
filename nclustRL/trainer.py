@@ -115,6 +115,8 @@ class Trainer:
 
     def load(self, checkpoint):
 
+        checkpoint = is_dir(checkpoint)
+
         self._agent = self.trainer(config=self.config, env=self.env).restore(checkpoint)
 
     def _compute_episode(self, env, obs):
@@ -132,6 +134,8 @@ class Trainer:
         return episode_reward, episode_accuracy
 
     def test(self, n_episodes: int = 100):
+
+        n_episodes = int(n_episodes)
 
         env = nclustenv.make(self.env, **self.config['env_config'])
 
@@ -160,7 +164,7 @@ class Trainer:
     def test_dataset(self, dataset: SyntheticDataset):
 
         config = {
-            'dataset': dataset,
+            'dataset': is_dataset(dataset),
             'train_test_split': 0.0,
             'seed': self.seed,
             'metric': self.config['env_config']['metric'],
