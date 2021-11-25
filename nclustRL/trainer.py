@@ -1,12 +1,13 @@
 
+from os import path
 from statistics import mean
-
 import numpy as np
 
 import nclustenv
 from nclustenv.version import ENV_LIST
+from ray.util.client import ray
 
-from nclustRL.utils.type_checker import is_trainer, is_env, is_dir, is_config
+from nclustRL.utils.type_checker import is_trainer, is_env, is_dir, is_config, is_dataset
 from nclustRL.utils.typing import RlLibTrainer, NclustEnvName, TrainerConfigDict, \
     Directory, Optional, SyntheticDataset
 
@@ -57,10 +58,60 @@ class Trainer:
     def train(
             self,
             n_samples: Optional[int] = 1,
+            metric: Optional[str] = 'episode_reward_mean',
+            mode: Optional[str] = None,
+            checkpoint_freq: Optional[int] = 10,
+            stop_iters: Optional[int] = 1000,
+            stop_metric: Optional[float] = None,
             checkpoint: Optional[str] = None,
-            resume: Optional[bool] = False
+            resume: Optional[bool] = False,
+            verbose: Optional[int] = 1
     ):
-        pass
+        if checkpoint:
+            checkpoint = is_dir(checkpoint)
+
+        generator = ((i, self._np_random.randint(0, 1000)) for i in range(n_samples))
+
+        results = []
+
+        for i, seed in generator:
+
+            local_dir = path.join(self.save_dir, 'sample_{}'.format(i))
+
+            stop_criteria = {
+                "training_iteration": stop_iters,
+                metric: stop_metric,
+            }
+
+            analysis = ray.tune.run(
+                self.trainer,
+                config=self.config,
+                local_dir=local_dir,
+                metric=metric,
+                mode=mode,
+                stop=stop_criteria,
+                checkpoint_at_end=True,
+                checkpoint_freq=checkpoint_freq,
+                resume=resume,
+                restore=checkpoint,
+                queue_trials=True,
+                verbose=verbose
+            )
+
+            checkpoints = analysis.get_trial_checkpoints_paths(
+                trial=analysis.get_best_trial(
+                    metric=metric,
+                    mode=mode), metric=metric)
+
+            results.append({
+                'config': analysis.get_best_config(metric=metric, mode=mode),
+                'path': checkpoints[0][0],
+                'metric': checkpoints[0][1],
+            })
+
+        
+
+
 
     def load(self, checkpoint):
 
