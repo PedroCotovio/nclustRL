@@ -17,3 +17,10 @@ class TrainerError(BaseError):
     def __init__(self, val):
         message = '{} trainer does not exist in RlLib.'
         super(self.__init__(val, message))
+
+
+class DatasetError(BaseError):
+
+    def __init__(self, val):
+        message = '{} dataset must be an instance of SynteticDataset.'
+        super(self.__init__(val, message))

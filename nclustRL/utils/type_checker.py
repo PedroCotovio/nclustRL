@@ -2,8 +2,9 @@ from pathlib import Path
 
 from nclustenv.version import ENV_LIST
 
-from errors import TrainerError, EnvError
+from errors import TrainerError, EnvError, DatasetError
 from ray.rllib.agents.trainer import Trainer
+from nclustenv.utils.datasets import SyntheticDataset
 
 
 def is_trainer(trainer):
@@ -32,3 +33,10 @@ def is_config(config):
     if not isinstance(config, dict):
         raise AttributeError('config parameter should be a dict')
     return config
+
+
+def is_dataset(dataset):
+
+    if not isinstance(dataset, SyntheticDataset):
+        raise DatasetError
+    return dataset
