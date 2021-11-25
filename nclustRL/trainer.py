@@ -18,14 +18,16 @@ class Trainer:
             self,
             trainer: RlLibTrainer,
             env: NclustEnvName,
+            name: Optional[str] = 'test',
             config: Optional[TrainerConfigDict] = None,
             save_dir: Optional[Directory] = None,
             seed: Optional[int] = None
     ):
         self._trainer = is_trainer(trainer)
         self._env = is_env(env)
+        self._name = str(name)
         self._config = is_config(config)
-        self._save_dir = is_dir(save_dir)
+        self._dir = is_dir(save_dir)
         self._seed = int(seed)
         self._np_random = np.random.RandomState(seed)
 
@@ -49,7 +51,7 @@ class Trainer:
 
     @property
     def save_dir(self):
-        return self._save_dir
+        return path.join(self._dir, self._name)
 
     @property
     def seed(self):
