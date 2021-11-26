@@ -1,29 +1,17 @@
 
 BINARY_BASE = {
-            'shape': [[90, 9], [110, 11]],
+            'shape': [[500, 10], [500, 10]],
             'n': 10,
             'clusters': [10, 10],
             'dataset_settings': {
-                'patterns': {
-                    'value': [['CONSTANT', 'CONSTANT']]
-                },
-                'maxval': {
-                    'value': 11.0,
-                },
-                'minval': {
-                    'value': [-10.0, 1.0],
-                    'type': 'continuous',
-                    'randomize': True
-                }
-            },
-            'max_steps': 150
+                'patterns': dict(value=[['CONSTANT', 'CONSTANT']]),
+                'symbols': dict(value=[-1, 1]),
+                'bktype': dict(value='UNIFORM'),
+                'clusterdistribution': dict(value=[['UNIFORM', 8, 12], ['UNIFORM', 4, 6]]),
+                'contiguity': dict(value=None),
+                'plaidcoherency': dict(value='NO_OVERLAPPING')
+            }
         }
-
-BINARY_N_LESS = {}
-
-BINARY_N_MORE = {}
-
-BINARY_N = {}
 
 BINARY_SHAPES_01 = {}
 
@@ -48,3 +36,11 @@ BINARY_QUALITY_01 = {}
 BINARY_QUALITY_02 = {}
 
 BINARY_QUALITY = {}
+
+BINARY_N_LESS = {}
+
+BINARY_N_MORE = {}
+
+BINARY_N = {}
+
+BINARY_N_UNDEFINED = {}
