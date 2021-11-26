@@ -4,7 +4,6 @@ from statistics import mean
 import numpy as np
 
 import nclustenv
-import pandas as pd
 from nclustenv.version import ENV_LIST
 from ray.util.client import ray
 
@@ -86,9 +85,13 @@ class Trainer:
                 metric: stop_metric,
             }
 
+            # Update seed
+            config = self.config
+            config['env_config']['seed'] = seed
+
             analysis = ray.tune.run(
                 self.trainer,
-                config=self.config,
+                config=config,
                 local_dir=local_dir,
                 metric=metric,
                 mode=mode,
