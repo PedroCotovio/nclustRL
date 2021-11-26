@@ -112,14 +112,7 @@ class Trainer:
                 'metric': checkpoints[0][1],
             })
 
-        # Get most common config
-        configs = pd.DataFrame([res['config'] for res in results])
-        most_voted_config = {col: configs[col].value_counts().argmax() for col in configs.columns}
-
-        # get most agreeable config
-        best_checkpoint = results[np.argmax(
-            [sum([1 for key in res['config'].keys() if res['config'][key] == most_voted_config[key]])
-             for res in results])]
+        best_checkpoint = results[np.argmax([res['metric'] for res in results])]
 
         return best_checkpoint
 
