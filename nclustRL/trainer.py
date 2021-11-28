@@ -27,7 +27,7 @@ class Trainer:
         self._env = is_env(env)
         self._name = str(name)
         self._config = is_config(config)
-        self._dir = is_dir(save_dir)
+        self._dir = str(save_dir)
         self._seed = int(seed)
         self._np_random = np.random.RandomState(seed)
 
