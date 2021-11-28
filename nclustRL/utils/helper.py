@@ -1,4 +1,5 @@
 from collections.abc import Iterable
+from nclustRL.utils.typing import Dict
 
 
 def loader(cls, module=None):
@@ -42,5 +43,13 @@ def random_rollout(env):
 
     # Return the cumulative reward.
     return cumulative_reward
+
+
+def inherit_dict(parent: Dict, child: Dict):
+
+    res = parent.copy()
+    res.update(child)
+
+    return res
 
 
