@@ -24,6 +24,10 @@ class Trainer:
             save_dir: Optional[Directory] = None,
             seed: Optional[int] = None
     ):
+
+        if config is None:
+            config = {}
+
         self._trainer = is_trainer(trainer)
         self._env = is_env(env)
         self._name = str(name)
@@ -33,6 +37,8 @@ class Trainer:
         self._np_random = np.random.RandomState(seed)
 
         self._agent = self.trainer(config=self.config, env=self.env)
+
+        self._config['env'] = self.env
 
     @property
     def trainer(self):
@@ -62,7 +68,7 @@ class Trainer:
             self,
             n_samples: Optional[int] = 1,
             metric: Optional[str] = 'episode_reward_mean',
-            mode: Optional[str] = None,
+            mode: Optional[str] = 'max',
             checkpoint_freq: Optional[int] = 10,
             stop_iters: Optional[int] = 1000,
             stop_metric: Optional[float] = None,
