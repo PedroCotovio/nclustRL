@@ -6,6 +6,7 @@ import numpy as np
 import nclustenv
 from nclustenv.version import ENV_LIST
 from ray.util.client import ray
+from tqdm import tqdm
 
 from nclustRL.utils.type_checker import is_trainer, is_env, is_dir, is_config, is_dataset
 from nclustRL.utils.typing import RlLibTrainer, NclustEnvName, TrainerConfigDict, \
@@ -76,46 +77,52 @@ class Trainer:
 
         results = []
 
-        for i, seed in generator:
+        with tqdm(generator, unit='sample') as tsample:
 
-            local_dir = path.join(self.save_dir, 'sample_{}'.format(i))
+            for i, seed in tsample:
 
-            stop_criteria = {
-                "training_iteration": stop_iters,
-                metric: stop_metric,
-            }
+                tsample.set_description(f"Sample {i + 1}")
 
-            # Update seed
-            config = self.config
-            config['env_config']['seed'] = seed
+                local_dir = path.join(self.save_dir, 'sample_{}'.format(i))
 
-            analysis = ray.tune.run(
-                self.trainer,
-                config=config,
-                local_dir=local_dir,
-                metric=metric,
-                mode=mode,
-                stop=stop_criteria,
-                checkpoint_at_end=True,
-                checkpoint_freq=checkpoint_freq,
-                resume=resume,
-                restore=checkpoint,
-                queue_trials=True,
-                verbose=verbose
-            )
+                stop_criteria = {
+                    "training_iteration": stop_iters,
+                    metric: stop_metric,
+                }
 
-            checkpoints = analysis.get_trial_checkpoints_paths(
-                trial=analysis.get_best_trial(
+                # Update seed
+                config = self.config.copy()
+                config['env_config']['seed'] = seed
+
+                analysis = ray.tune.run(
+                    self.trainer,
+                    config=config,
+                    local_dir=local_dir,
                     metric=metric,
-                    mode=mode), metric=metric)
+                    mode=mode,
+                    stop=stop_criteria,
+                    checkpoint_at_end=True,
+                    checkpoint_freq=checkpoint_freq,
+                    resume=resume,
+                    restore=checkpoint,
+                    queue_trials=True,
+                    verbose=verbose
+                )
 
-            results.append({
-                'config': analysis.get_best_config(metric=metric, mode=mode),
-                'path': checkpoints[0][0],
-                'metric': checkpoints[0][1],
-            })
+                checkpoints = analysis.get_trial_checkpoints_paths(
+                    trial=analysis.get_best_trial(
+                        metric=metric,
+                        mode=mode), metric=metric)
 
-        best_checkpoint = results[np.argmax([res['metric'] for res in results])]
+                results.append({
+                    'config': analysis.get_best_config(metric=metric, mode=mode),
+                    'path': checkpoints[0][0],
+                    'metric': checkpoints[0][1],
+                })
+
+                best_checkpoint = results[np.argmax([res['metric'] for res in results])]
+
+                tsample.set_postfix(metric=best_checkpoint['metric'])
 
         return best_checkpoint
 
