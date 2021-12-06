@@ -1,4 +1,6 @@
 from collections.abc import Iterable
+from ray.tune import grid_search
+import numpy as np
 from nclustRL.utils.typing import Dict
 
 
@@ -51,5 +53,17 @@ def inherit_dict(parent: Dict, child: Dict):
     res.update(child)
 
     return res
+
+
+def grid_interval(min, max, interval=5):
+
+    dtype = None
+
+    if isinstance(max, int) and isinstance(min, int):
+        dtype = 'int64'
+
+    return grid_search(np.linspace(min, max, interval, dtype=dtype))
+
+
 
 
