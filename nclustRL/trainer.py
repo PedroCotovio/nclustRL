@@ -36,7 +36,7 @@ class Trainer:
         self._seed = int(seed)
         self._np_random = np.random.RandomState(seed)
 
-        self._agent = self.trainer(config=self.config, env=self.env)
+        self._agent = self.trainer(config=self.eval_config, env=self.env)
 
         self._config['env'] = self.env
 
@@ -63,6 +63,22 @@ class Trainer:
     @property
     def seed(self):
         return self._seed
+
+    @property
+    def eval_config(self):
+        eval_dict = self.config['evaluation_config']
+        config = self.config.copy()
+        config.update(eval_dict)
+
+        return config
+
+    def _set_seed(self, seed):
+
+        config = self.config.copy()
+        config['env_config']['seed'] = seed
+        config['seed'] = seed
+
+        return config
 
     def train(
             self,
@@ -96,9 +112,8 @@ class Trainer:
                     metric: stop_metric,
                 }
 
-                # Update seed
-                config = self.config.copy()
-                config['env_config']['seed'] = seed
+                # Update seeds
+                config = self._set_seed(seed)
 
                 analysis = ray.tune.run(
                     self.trainer,
@@ -120,10 +135,13 @@ class Trainer:
                         metric=metric,
                         mode=mode), metric=metric)
 
+            # add logdir
+
                 results.append({
                     'config': analysis.get_best_config(metric=metric, mode=mode),
                     'path': checkpoints[0][0],
                     'metric': checkpoints[0][1],
+                    'df': analysis.dataframe()
                 })
 
                 best_checkpoint = results[np.argmax([res['metric'] for res in results])]
@@ -136,7 +154,7 @@ class Trainer:
 
         checkpoint = is_dir(checkpoint)
 
-        self._agent = self.trainer(config=self.config, env=self.env).restore(checkpoint)
+        self._agent = self.trainer(config=self.eval_config, env=self.env).restore(checkpoint)
 
     def _compute_episode(self, env, obs):
 
