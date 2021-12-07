@@ -1,10 +1,10 @@
 from pathlib import Path
 
 from nclustenv.version import ENV_LIST
-
-from errors import TrainerError, EnvError, DatasetError
-from ray.rllib.agents.trainer import Trainer
 from nclustenv.utils.datasets import SyntheticDataset
+
+from nclustRL.utils.errors import TrainerError, EnvError, DatasetError
+from ray.rllib.agents.trainer import Trainer
 
 
 def is_trainer(trainer):
