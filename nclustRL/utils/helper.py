@@ -2,6 +2,7 @@ from collections.abc import Iterable
 from ray.tune import grid_search
 import numpy as np
 from nclustRL.utils.typing import Dict
+import torch as th
 
 
 def loader(cls, module=None):
@@ -63,6 +64,31 @@ def grid_interval(min, max, interval=5):
         dtype = 'int64'
 
     return grid_search(np.linspace(min, max, interval, dtype=dtype))
+
+
+def transform_obs(obs):
+
+    obs = obs.copy()
+    state = obs['state'].clone()
+    ntypes = state.ntypes
+    keys = sorted(list(state.nodes[ntypes[0]].data.keys()))
+
+    ndata = {}
+
+    for ntype in ntypes:
+        ndata[ntype] = th.vstack(
+            [state.ndata[key][ntype].float() for key in keys]
+        ).transpose(0, 1)
+
+        state.nodes[ntype].data.clear()
+
+    state.ndata['feat'] = ndata
+    obs['state'] = state
+
+    return obs
+
+
+
 
 
 
