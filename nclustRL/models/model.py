@@ -41,5 +41,5 @@ class HeteroClassifier(nn.Module):
                 hg = hg + dgl.mean_nodes(g, 'h', ntype=ntype)
             return self.classify(hg)
 
-    class RlModel:
-        pass
+class RlModel:
+    pass
