@@ -3,6 +3,7 @@ from ray.tune import grid_search
 import numpy as np
 from nclustRL.utils.typing import Dict
 import torch as th
+import itertools
 
 
 def loader(cls, module=None):
@@ -86,6 +87,11 @@ def transform_obs(obs):
     obs['state'] = state
 
     return obs
+
+def pairwise(iterable):
+    a, b = itertools.tee(iterable)
+    next(b, None)
+    return zip(a, b)  
 
 
 
