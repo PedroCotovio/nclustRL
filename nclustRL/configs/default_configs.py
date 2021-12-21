@@ -1,4 +1,4 @@
-from nclustRL.utils.typing import TrainerConfigDict
+from nclustRL.utils.typing import TrainerConfigDict, ModelConfigDict
 from nclustRL.utils.helper import grid_interval, grid_search
 import torch
 import os
@@ -25,6 +25,21 @@ GRID_PPO_CONFIG: TrainerConfigDict = {
     "vf_clip_param": grid_interval(10.0, 20.0, 3),
     # Target value for KL divergence.
     "kl_target": grid_interval(0.003, 0.01, 3),
+}
+
+MODEL_DEFAULTS: ModelConfigDict = {
+    # === Options for custom models ===
+    # Name of a custom model to use
+    "custom_model": 'main_model_torch',
+    # Extra options to pass to the custom classes. These will be available to
+    # the Model's constructor in the model_config field. Also, they will be
+    # attempted to be passed as **kwargs to ModelV2 models. For an example,
+    # see rllib/models/[tf|torch]/attention_net.py.
+    "custom_model_config": {
+        
+    },
+    # Name of a custom action distribution to use.
+    "custom_action_dist": None
 }
 
 DEFAULT_TUNING_CONFIG: TrainerConfigDict = {
