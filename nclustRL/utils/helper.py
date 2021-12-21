@@ -91,7 +91,10 @@ def transform_obs(obs):
 def pairwise(iterable):
     a, b = itertools.tee(iterable)
     next(b, None)
-    return zip(a, b)  
+    return zip(a, b) 
+
+def randint(size, dtype):
+    return th.randint(low=0, high=2, size=[size], dtype=dtype)
 
 
 
