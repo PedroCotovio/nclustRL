@@ -3,6 +3,7 @@ import dgl.nn.pytorch as dglnn
 import torch.nn as nn
 from nclustRL.utils.helper import pairwise
 
+
 class HeteroRelu(nn.ReLU):
 
     def __init__(self, inplace:bool = False):
@@ -11,6 +12,7 @@ class HeteroRelu(nn.ReLU):
     def forward(self, inputs):
         
         return {k: super(HeteroRelu, self).forward(v) for k, v in inputs.items()}
+
 
 class GraphSequential(nn.Sequential):
 
@@ -51,8 +53,6 @@ class RGCN(nn.Module):
             _layers.append(HeteroRelu())
 
         self._hidden_layers = GraphSequential(*_layers)
-
-            
 
     def forward(self, graph, feat, edge_weight=None):
 
