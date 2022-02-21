@@ -1,4 +1,5 @@
 from pathlib import Path
+from dgl import data
 
 from nclustenv.version import ENV_LIST
 from nclustenv.utils.datasets import SyntheticDataset
@@ -9,15 +10,15 @@ from ray.rllib.agents.trainer import Trainer
 
 def is_trainer(trainer):
 
-    if not isinstance(trainer, Trainer):
-        raise TrainerError
+    if not isinstance(trainer, type(Trainer)):
+        raise TrainerError(trainer)
     return trainer
 
 
 def is_env(env):
 
     if env not in ENV_LIST:
-        raise EnvError
+        raise EnvError(env)
     return env
 
 
@@ -38,5 +39,5 @@ def is_config(config):
 def is_dataset(dataset):
 
     if not isinstance(dataset, SyntheticDataset):
-        raise DatasetError
+        raise DatasetError(dataset)
     return dataset

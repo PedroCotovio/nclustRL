@@ -5,6 +5,13 @@ from nclustRL.utils.typing import Dict
 import torch as th
 import itertools
 
+import dgl
+import nclustenv
+from nclustenv.configs import biclustering, triclustering
+from gym.wrappers import TransformObservation
+import ray
+from time import sleep
+
 
 def loader(cls, module=None):
 
@@ -78,7 +85,11 @@ def transform_obs(obs):
 
     for ntype in ntypes:
         ndata[ntype] = th.vstack(
-            [state.ndata[key][ntype].float() for key in keys]
+            [th.where(
+                state.ndata[key][ntype], 
+                th.ones(state.ndata[key][ntype].shape, dtype=th.float32), 
+                th.full(state.ndata[key][ntype].shape, -1, dtype=th.float32)
+                ) for key in keys]
         ).transpose(0, 1)
 
         state.nodes[ntype].data.clear()
@@ -97,6 +108,24 @@ def randint(size, dtype):
     return th.randint(low=0, high=2, size=[size], dtype=dtype)
 
 
+def generate_dummy_obs(batch_size, dim):
+
+    if dim == 2:
+        env_name = 'BiclusterEnv-v0'
+        config_module = biclustering
+    else:
+        env_name = 'TriclusterEnv-v0'
+        config_module = triclustering
+
+    env = TransformObservation(nclustenv.make(env_name, **config_module.binary.base), transform_obs)
+
+    return dgl.batch([env.reset()['state'] for _ in range(batch_size)])
+
+
+def restart_cluster():
+    ray.shutdown()
+    sleep(0.1)
+    ray.init()
 
 
 

@@ -1,4 +1,4 @@
-from nclustRL.utils.typing import TrainerConfigDict, ModelConfigDict
+from nclustRL.utils.typing import TrainerConfigDict
 from nclustRL.utils.helper import grid_interval, grid_search
 import torch
 import os
@@ -27,22 +27,22 @@ GRID_PPO_CONFIG: TrainerConfigDict = {
     "kl_target": grid_interval(0.003, 0.01, 3),
 }
 
-MODEL_DEFAULTS: ModelConfigDict = {
+MODEL_DEFAULTS = {
     # === Options for custom models ===
     # Name of a custom model to use
-    "custom_model": 'main_model_torch',
+    "custom_model": 'general_model_torch',
     # Extra options to pass to the custom classes. These will be available to
     # the Model's constructor in the model_config field. Also, they will be
     # attempted to be passed as **kwargs to ModelV2 models. For an example,
     # see rllib/models/[tf|torch]/attention_net.py.
     "custom_model_config": {
-        
+        "fcnet_feats": [256, 256]
     },
     # Name of a custom action distribution to use.
     "custom_action_dist": None
 }
 
-DEFAULT_TUNING_CONFIG: TrainerConfigDict = {
+TRAINER_DEFAULTS: TrainerConfigDict = {
     # === Settings for Rollout Worker processes ===
     # Number of rollout worker actors to create for parallel sampling. Setting
     # this to 0 will force rollouts to be done in the trainer actor.
@@ -84,10 +84,10 @@ DEFAULT_TUNING_CONFIG: TrainerConfigDict = {
     # Initial coefficient for KL divergence.
     "kl_coeff": 0.2,
     # Size of batches collected from each worker.
-    "rollout_fragment_length": 200,
+    "rollout_fragment_length": int(1024 / (cpu_count - 1)),
     # Number of timesteps collected for each SGD round. This defines the size
     # of each SGD epoch.
-    "train_batch_size": 4000,
+    "train_batch_size": 1024,
     # Total SGD batch size across all devices for SGD. This defines the
     # minibatch size within each epoch.
     "sgd_minibatch_size": 128,
@@ -211,8 +211,7 @@ DEFAULT_TUNING_CONFIG: TrainerConfigDict = {
     # also printed out once at startup at the INFO level). When using the
     # `rllib train` command, you can also use the `-v` and `-vv` flags as
     # shorthand for INFO and DEBUG.
-    # TODO set to "DEBUG" on first run
-    "log_level": "WARN",
+    "log_level": "DEBUG",
     # Whether to attempt to continue training if a worker crashes. The number
     # of currently healthy workers is reported as the "num_healthy_workers"
     # metric.
@@ -362,3 +361,6 @@ DEFAULT_TUNING_CONFIG: TrainerConfigDict = {
     # In the future, the default for this will be True.
     "_disable_preprocessor_api": True,
 }
+
+DEFAULT_CONFIG = TRAINER_DEFAULTS.copy()
+DEFAULT_CONFIG['model'] = MODEL_DEFAULTS

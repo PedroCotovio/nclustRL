@@ -8,10 +8,7 @@ import warnings
 import ray
 
 # init ray
-try:
-    ray.init()
-except RuntimeError:
-    pass
+ray.init(ignore_reinit_error=True)
 
 
 from .version import VERSION as __version__
@@ -19,6 +16,9 @@ from .trainer import Trainer
 from . import utils
 from . import models
 from . import configs
+
+# Import Restart
+from .utils.helper import restart_cluster
 
 # register envs in ray
 from .utils import registry

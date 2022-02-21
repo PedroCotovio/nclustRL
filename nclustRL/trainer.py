@@ -7,10 +7,18 @@ import nclustenv
 from nclustenv.version import ENV_LIST
 from ray.util.client import ray
 from tqdm import tqdm
+import nclustRL
 
 from nclustRL.utils.type_checker import is_trainer, is_env, is_dir, is_config, is_dataset
 from nclustRL.utils.typing import RlLibTrainer, NclustEnvName, TrainerConfigDict, \
     Directory, Optional, SyntheticDataset
+
+from gym.wrappers import TransformObservation
+from nclustRL.utils.helper import transform_obs, randint
+
+from nclustRL.configs.default_configs import DEFAULT_CONFIG
+
+from nclustenv.configs import biclustering, triclustering
 
 
 class Trainer:
@@ -21,12 +29,12 @@ class Trainer:
             env: NclustEnvName,
             name: Optional[str] = 'test',
             config: Optional[TrainerConfigDict] = None,
-            save_dir: Optional[Directory] = None,
-            seed: Optional[int] = None
+            save_dir: Optional[Directory] = '',
+            seed: Optional[int] = 7
     ):
 
         if config is None:
-            config = {}
+            config = DEFAULT_CONFIG
 
         self._trainer = is_trainer(trainer)
         self._env = is_env(env)
@@ -36,9 +44,12 @@ class Trainer:
         self._seed = int(seed)
         self._np_random = np.random.RandomState(seed)
 
-        self._agent = self.trainer(config=self.eval_config, env=self.env)
-
         self._config['env'] = self.env
+
+        if not self._config['env_config']:
+            self._config['env_config'] = self._get_default_env_config()
+
+        self._agent = self.trainer(config=self.eval_config, env=self.env)
 
     @property
     def trainer(self):
@@ -71,6 +82,24 @@ class Trainer:
         config.update(eval_dict)
 
         return config
+
+    @property
+    def dim(self):
+        if 'Bicluster' in self.env:
+            return 2
+        return 3
+
+    @staticmethod
+    def restart_ray():
+        nclustRL.restart_cluster()
+
+    def _get_default_env_config(self):
+        if self.dim == 2:
+            config = biclustering
+        else:
+            config = triclustering
+
+        return config.binary.base
 
     def _set_seed(self, seed):
 
@@ -135,8 +164,6 @@ class Trainer:
                         metric=metric,
                         mode=mode), metric=metric)
 
-            # add logdir
-
                 results.append({
                     'config': analysis.get_best_config(metric=metric, mode=mode),
                     'path': checkpoints[0][0],
@@ -162,7 +189,7 @@ class Trainer:
         done = False
 
         while not done:
-            action = self.agent.compute_action(obs)
+            action = self.agent.compute_single_action(obs)
             obs, reward, done, info = env.step(action)
             episode_reward += reward
 
@@ -170,11 +197,15 @@ class Trainer:
 
         return episode_reward, episode_accuracy
 
+    @staticmethod
+    def _wrap_env(env):
+        return TransformObservation(env, transform_obs)
+
     def test(self, n_episodes: int = 100):
 
         n_episodes = int(n_episodes)
 
-        env = nclustenv.make(self.env, **self.config['env_config'])
+        env = self._wrap_env(nclustenv.make(self.env, **self.config['env_config']))
 
         accuracy = []
         reward = []
@@ -211,7 +242,7 @@ class Trainer:
             'penalty': self.config['env_config']['penalty'],
         }
 
-        env = nclustenv.make(self._get_offline_env(), **config)
+        env = self._wrap_env(nclustenv.make(self._get_offline_env(), **config))
 
         accuracy = []
         reward = []
