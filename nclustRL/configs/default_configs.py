@@ -1,32 +1,60 @@
 from nclustRL.utils.typing import TrainerConfigDict
-from nclustRL.utils.helper import grid_interval, grid_search
 import torch
 import os
 from ray import tune
+from ray.tune.schedulers import PopulationBasedTraining
+import random
+
 
 gpu_count = torch.cuda.device_count()
 cpu_count = os.cpu_count()
 
-GRID_PPO_CONFIG: TrainerConfigDict = {
-    # The GAE (lambda) parameter.
-    "lambda": grid_interval(0.9, 1.0, 3),
-    # Initial coefficient for KL divergence.
-    "kl_coeff": grid_interval(0.2, 1, 3),
-    # Stepsize of SGD.
-    #"lr": grid_interval(5e-6, 0.003),
-    # Coefficient of the value function loss. IMPORTANT: you must tune this if
-    # you set vf_share_layers=True inside your model's config.
-    "vf_loss_coeff": grid_interval(0.5, 1.0),
-    # Coefficient of the entropy regularizer.
-    #"entropy_coeff": grid_interval(0.0, 0.01, 3),
-    # PPO clip parameter.
-    "clip_param": grid_search([0.1, 0.2, 0.3]),
-    # Clip param for the value function. Note that this is sensitive to the
-    # scale of the rewards. If your expected V is large, increase this.
-    "vf_clip_param": grid_interval(10.0, 20.0, 3),
-    # Target value for KL divergence.
-    "kl_target": grid_interval(0.003, 0.01, 3),
-}
+
+def explore(config):
+    # ensure we collect enough timesteps to do sgd
+    if config["train_batch_size"] < config["sgd_minibatch_size"] * 2:
+        config["train_batch_size"] = config["sgd_minibatch_size"] * 2
+    # ensure we run at least one sgd iter
+    if config["num_sgd_iter"] < 1:
+        config["num_sgd_iter"] = 1
+    return config
+
+
+GRID_PPO_PBT = PopulationBasedTraining(
+        time_attr="time_total_s",
+        perturbation_interval=120,
+        resample_probability=0.25,
+        # Specifies the mutations of these hyperparams
+        hyperparam_mutations={
+            # The GAE (lambda) parameter.
+            "lambda": lambda: random.uniform(0.9, 1.0),
+            # PPO clip parameter.
+            "clip_param": lambda: random.uniform(0.01, 0.5),
+            # Stepsize of SGD.
+            "lr": [1e-3, 5e-4, 1e-4, 5e-5, 1e-5],
+            # Initial coefficient for KL divergence.
+            "kl_coeff": lambda: random.uniform(0.2, 1),
+            # Coefficient of the value function loss. IMPORTANT: you must tune this if
+            # you set vf_share_layers=True inside your model's config.
+            "vf_loss_coeff": random.uniform(0.5, 1.0),
+            # Coefficient of the entropy regularizer.
+            "entropy_coeff": random.uniform(0.0, 0.01),
+            # Clip param for the value function. Note that this is sensitive to the
+            # scale of the rewards. If your expected V is large, increase this.
+            "vf_clip_param": random.uniform(10, 20),
+            # Target value for KL divergence.
+            "kl_target": random.uniform(0.003, 0.01),
+            # Number of SGD iterations in each outer loop (i.e., number of epochs to
+             # execute per train batch).
+            "num_sgd_iter": lambda: random.randint(1, 30),
+            # Total SGD batch size across all devices for SGD. This defines the
+            # minibatch size within each epoch.
+            "sgd_minibatch_size": lambda: random.randint(128, 16384),
+            # Number of timesteps collected for each SGD round. This defines the size
+            # of each SGD epoch.
+            "train_batch_size": lambda: random.randint(1000, 160000),
+        },
+        custom_explore_fn=explore)
 
 MODEL_DEFAULTS = {
     # === Options for custom models ===
@@ -365,6 +393,3 @@ TRAINER_DEFAULTS: TrainerConfigDict = {
 
 DEFAULT_CONFIG = TRAINER_DEFAULTS.copy()
 DEFAULT_CONFIG['model'] = MODEL_DEFAULTS
-
-HYPARAM_TUNE_CONFIG = DEFAULT_CONFIG.copy()
-HYPARAM_TUNE_CONFIG.update(GRID_PPO_CONFIG)
