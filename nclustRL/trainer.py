@@ -115,11 +115,13 @@ class Trainer:
             metric: Optional[str] = 'episode_reward_mean',
             mode: Optional[str] = 'max',
             checkpoint_freq: Optional[int] = 10,
+            stop: Optional[bool] = True,
             stop_iters: Optional[int] = 100,
             stop_metric: Optional[float] = 100,
             checkpoint: Optional[str] = None,
             resume: Optional[bool] = False,
-            verbose: Optional[int] = 1
+            verbose: Optional[int] = 1,
+            *args, **kwargs
     ):
         if checkpoint:
             checkpoint = is_file(checkpoint)
@@ -136,10 +138,14 @@ class Trainer:
 
                 local_dir = path.join(self.save_dir, 'sample_{}'.format(i))
 
-                stop_criteria = {
-                    "training_iteration": stop_iters,
-                    metric: stop_metric,
-                }
+                if stop:
+                    stop_criteria = {
+                        "training_iteration": stop_iters,
+                        metric: stop_metric,
+                    }
+
+                else:
+                    stop_criteria = None
 
                 # Update seeds
                 config = self._set_seed(seed)
@@ -155,7 +161,8 @@ class Trainer:
                     checkpoint_freq=checkpoint_freq,
                     resume=resume,
                     restore=checkpoint,
-                    verbose=verbose
+                    verbose=verbose,
+                    *args, **kwargs
                 )
 
                 checkpoints = analysis.get_trial_checkpoints_paths(
