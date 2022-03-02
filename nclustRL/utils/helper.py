@@ -87,8 +87,8 @@ def transform_obs(obs):
         ndata[ntype] = th.vstack(
             [th.where(
                 state.ndata[key][ntype], 
-                th.ones(state.ndata[key][ntype].shape, dtype=th.float32), 
-                th.full(state.ndata[key][ntype].shape, -1, dtype=th.float32)
+                th.ones(state.ndata[key][ntype].shape, dtype=th.float32).to('cuda'), 
+                th.full(state.ndata[key][ntype].shape, -1, dtype=th.float32).to('cuda')
                 ) for key in keys]
         ).transpose(0, 1)
 
@@ -108,7 +108,7 @@ def randint(size, dtype):
     return th.randint(low=0, high=2, size=[size], dtype=dtype)
 
 
-def generate_dummy_obs(batch_size, dim):
+def generate_dummy_obs(batch_size, dim, n):
 
     if dim == 2:
         env_name = 'BiclusterEnv-v0'
@@ -117,7 +117,12 @@ def generate_dummy_obs(batch_size, dim):
         env_name = 'TriclusterEnv-v0'
         config_module = triclustering
 
-    env = TransformObservation(nclustenv.make(env_name, **config_module.binary.base), transform_obs)
+    config = config_module.binary.base.copy()
+    config['n'] = n
+    config['clusters'] = [n, n]
+
+
+    env = TransformObservation(nclustenv.make(env_name, **config), transform_obs)
 
     return dgl.batch([env.reset()['state'] for _ in range(batch_size)])
 

@@ -22,10 +22,10 @@ def is_env(env):
     return env
 
 
-def is_dir(dir):
+def is_file(dir):
 
-    if not Path(dir).is_dir():
-        raise NotADirectoryError('{} directory does not exist'.format(dir))
+    if not Path(dir).is_file():
+        raise NotADirectoryError('{} file does not exist'.format(dir))
     return dir
 
 

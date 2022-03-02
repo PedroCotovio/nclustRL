@@ -5,11 +5,11 @@ import numpy as np
 
 import nclustenv
 from nclustenv.version import ENV_LIST
-from ray.util.client import ray
+import ray
 from tqdm import tqdm
 import nclustRL
 
-from nclustRL.utils.type_checker import is_trainer, is_env, is_dir, is_config, is_dataset
+from nclustRL.utils.type_checker import is_trainer, is_env, is_file, is_config, is_dataset
 from nclustRL.utils.typing import RlLibTrainer, NclustEnvName, TrainerConfigDict, \
     Directory, Optional, SyntheticDataset
 
@@ -115,14 +115,14 @@ class Trainer:
             metric: Optional[str] = 'episode_reward_mean',
             mode: Optional[str] = 'max',
             checkpoint_freq: Optional[int] = 10,
-            stop_iters: Optional[int] = 1000,
-            stop_metric: Optional[float] = None,
+            stop_iters: Optional[int] = 100,
+            stop_metric: Optional[float] = 100,
             checkpoint: Optional[str] = None,
             resume: Optional[bool] = False,
             verbose: Optional[int] = 1
     ):
         if checkpoint:
-            checkpoint = is_dir(checkpoint)
+            checkpoint = is_file(checkpoint)
 
         generator = ((i, self._np_random.randint(0, 1000)) for i in range(n_samples))
 
@@ -155,7 +155,6 @@ class Trainer:
                     checkpoint_freq=checkpoint_freq,
                     resume=resume,
                     restore=checkpoint,
-                    queue_trials=True,
                     verbose=verbose
                 )
 
@@ -179,9 +178,8 @@ class Trainer:
 
     def load(self, checkpoint):
 
-        checkpoint = is_dir(checkpoint)
-
-        self._agent = self.trainer(config=self.eval_config, env=self.env).restore(checkpoint)
+        checkpoint = is_file(checkpoint)
+        self._agent.restore(checkpoint)
 
     def _compute_episode(self, env, obs):
 
@@ -201,7 +199,7 @@ class Trainer:
     def _wrap_env(env):
         return TransformObservation(env, transform_obs)
 
-    def test(self, n_episodes: int = 100):
+    def test(self, n_episodes: int = 100, verbose=True):
 
         n_episodes = int(n_episodes)
 
@@ -218,7 +216,15 @@ class Trainer:
             accuracy.append(episode_accuracy)
             reward.append(episode_reward)
 
+            if verbose:
+                print('Episode {} of {} done.'.format(i+1, n_episodes))
+
         return mean(reward), mean(accuracy)
+
+    def make_env(self):
+
+        return self._wrap_env(nclustenv.make(self.env, **self.config['env_config']))
+
 
     def _get_offline_env(self):
 
@@ -229,17 +235,17 @@ class Trainer:
                 if e != self.env and self.env in e:
                     return e
 
-    def test_dataset(self, dataset: SyntheticDataset):
+    def test_dataset(self, dataset: SyntheticDataset, verbose=True):
 
         config = {
             'dataset': is_dataset(dataset),
             'train_test_split': 0.0,
             'seed': self.seed,
-            'metric': self.config['env_config']['metric'],
-            'action': self.config['env_config']['action'],
-            'max_steps': self.config['env_config']['max_steps'],
-            'error_margin': self.config['env_config']['error_margin'],
-            'penalty': self.config['env_config']['penalty'],
+            'metric': self.config['env_config'].get('metric'),
+            'action': self.config['env_config'].get('action'),
+            'max_steps': self.config['env_config'].get('max_steps'),
+            'error_margin': self.config['env_config'].get('error_margin'),
+            'penalty': self.config['env_config'].get('penalty'),
         }
 
         env = self._wrap_env(nclustenv.make(self._get_offline_env(), **config))
@@ -247,6 +253,7 @@ class Trainer:
         accuracy = []
         reward = []
         main_done = False
+        i = 1
 
         while not main_done:
             obs, main_done = env.reset(train=False)
@@ -255,5 +262,9 @@ class Trainer:
 
             accuracy.append(episode_accuracy)
             reward.append(episode_reward)
+
+            if verbose:
+                print('Episode {} done.'.format(i))
+                i += 1
 
         return reward, accuracy

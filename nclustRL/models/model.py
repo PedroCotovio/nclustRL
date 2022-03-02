@@ -70,7 +70,7 @@ class RlModel(TorchModelV2, nn.Module):
                          name)
 
         try:
-            _n = obs_space['state'].n
+            self._n = obs_space['state'].n
 
         except AttributeError:
             raise AttributeError("This model does not handle an undefined number of clusters, define n in 'env_config', to search for n clusters")
@@ -80,10 +80,10 @@ class RlModel(TorchModelV2, nn.Module):
 
         _n_actions = obs_space['avail_actions'].shape[0]
 
-        conv_feats = list(model_config["custom_model_config"].get("conv_feats", [64 if _n < 64 else 128]))
+        conv_feats = list(model_config["custom_model_config"].get("conv_feats", [64 if self._n < 64 else 128]))
         fcnet_feats = list(model_config["custom_model_config"].get("fcnet_feats", [256, 256]))
 
-        gencoder = GraphEncoder(_n, conv_feats, _etypes)
+        gencoder = GraphEncoder(self._n, conv_feats, _etypes)
         fcnet = FcNet(conv_feats[-1], fcnet_feats)
 
         self._action_branch = SlimFC(
@@ -146,4 +146,4 @@ class RlModel(TorchModelV2, nn.Module):
 
         warnings.warn('Forward is running with random obs, this should only be acceptable during policy inicialization.')
 
-        return generate_dummy_obs(*obs.size())
+        return generate_dummy_obs(*obs.size(), self._n)

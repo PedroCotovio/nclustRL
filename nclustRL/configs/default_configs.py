@@ -2,6 +2,7 @@ from nclustRL.utils.typing import TrainerConfigDict
 from nclustRL.utils.helper import grid_interval, grid_search
 import torch
 import os
+from ray import tune
 
 gpu_count = torch.cuda.device_count()
 cpu_count = os.cpu_count()
@@ -12,12 +13,12 @@ GRID_PPO_CONFIG: TrainerConfigDict = {
     # Initial coefficient for KL divergence.
     "kl_coeff": grid_interval(0.2, 1, 3),
     # Stepsize of SGD.
-    "lr": grid_interval(5e-6, 0.003),
+    #"lr": grid_interval(5e-6, 0.003),
     # Coefficient of the value function loss. IMPORTANT: you must tune this if
     # you set vf_share_layers=True inside your model's config.
     "vf_loss_coeff": grid_interval(0.5, 1.0),
     # Coefficient of the entropy regularizer.
-    "entropy_coeff": grid_interval(0.0, 0.01, 3),
+    #"entropy_coeff": grid_interval(0.0, 0.01, 3),
     # PPO clip parameter.
     "clip_param": grid_search([0.1, 0.2, 0.3]),
     # Clip param for the value function. Note that this is sensitive to the
@@ -364,3 +365,6 @@ TRAINER_DEFAULTS: TrainerConfigDict = {
 
 DEFAULT_CONFIG = TRAINER_DEFAULTS.copy()
 DEFAULT_CONFIG['model'] = MODEL_DEFAULTS
+
+HYPARAM_TUNE_CONFIG = DEFAULT_CONFIG.copy()
+HYPARAM_TUNE_CONFIG.update(GRID_PPO_CONFIG)
