@@ -36,14 +36,14 @@ GRID_PPO_PBT = PopulationBasedTraining(
             "kl_coeff": lambda: random.uniform(0.2, 1),
             # Coefficient of the value function loss. IMPORTANT: you must tune this if
             # you set vf_share_layers=True inside your model's config.
-            "vf_loss_coeff": random.uniform(0.5, 1.0),
+            "vf_loss_coeff": lambda: random.uniform(0.5, 1.0),
             # Coefficient of the entropy regularizer.
-            "entropy_coeff": random.uniform(0.0, 0.01),
+            "entropy_coeff": lambda: random.uniform(0.0, 0.01),
             # Clip param for the value function. Note that this is sensitive to the
             # scale of the rewards. If your expected V is large, increase this.
-            "vf_clip_param": random.uniform(10, 20),
+            "vf_clip_param": lambda: random.uniform(10, 20),
             # Target value for KL divergence.
-            "kl_target": random.uniform(0.003, 0.01),
+            "kl_target": lambda: random.uniform(0.003, 0.01),
             # Number of SGD iterations in each outer loop (i.e., number of epochs to
              # execute per train batch).
             "num_sgd_iter": lambda: random.randint(1, 30),
