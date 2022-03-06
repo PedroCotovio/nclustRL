@@ -20,7 +20,7 @@ def explore(config):
     return config
 
 
-GRID_PPO_PBT = PopulationBasedTraining(
+PPO_PBT = PopulationBasedTraining(
         time_attr="time_total_s",
         perturbation_interval=120,
         resample_probability=0.25,
@@ -55,6 +55,12 @@ GRID_PPO_PBT = PopulationBasedTraining(
             "train_batch_size": lambda: random.randint(1000, 160000),
         },
         custom_explore_fn=explore)
+
+PPO_TUNE_INIT = {
+    "num_sgd_iter": tune.choice([10, 20, 30]),
+    "sgd_minibatch_size": tune.choice([128, 512, 2048]),
+    "train_batch_size": tune.choice([10000, 20000, 40000])
+}
 
 MODEL_DEFAULTS = {
     # === Options for custom models ===
