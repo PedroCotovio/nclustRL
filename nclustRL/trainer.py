@@ -117,7 +117,7 @@ class Trainer:
             checkpoint_freq: Optional[int] = 10,
             stop: Optional[bool] = True,
             stop_iters: Optional[int] = 100,
-            stop_metric: Optional[float] = 100,
+            stop_metric: Optional[float] = 2.5,
             checkpoint: Optional[str] = None,
             resume: Optional[bool] = False,
             verbose: Optional[int] = 1,
