@@ -1,0 +1,55 @@
+Failure # 1 (occurred at 2022-03-03_06-08-56)
+Traceback (most recent call last):
+  File "/home/pedro.cotovio/Repos/nclustRL/venv/lib/python3.8/site-packages/ray/tune/trial_runner.py", line 924, in _process_trial
+    results = self.trial_executor.fetch_result(trial)
+  File "/home/pedro.cotovio/Repos/nclustRL/venv/lib/python3.8/site-packages/ray/tune/ray_trial_executor.py", line 787, in fetch_result
+    result = ray.get(trial_future[0], timeout=DEFAULT_GET_TIMEOUT)
+  File "/home/pedro.cotovio/Repos/nclustRL/venv/lib/python3.8/site-packages/ray/_private/client_mode_hook.py", line 105, in wrapper
+    return func(*args, **kwargs)
+  File "/home/pedro.cotovio/Repos/nclustRL/venv/lib/python3.8/site-packages/ray/worker.py", line 1713, in get
+    raise value.as_instanceof_cause()
+ray.exceptions.RayTaskError(ValueError): [36mray::PPO.train()[39m (pid=234778, ip=10.211.200.145, repr=PPO)
+  File "/home/pedro.cotovio/Repos/nclustRL/venv/lib/python3.8/site-packages/ray/rllib/agents/ppo/ppo_torch_policy.py", line 81, in loss
+    logits, state = model(train_batch)
+  File "/home/pedro.cotovio/Repos/nclustRL/venv/lib/python3.8/site-packages/ray/rllib/models/modelv2.py", line 244, in __call__
+    res = self.forward(restored, state or [], seq_lens)
+  File "/home/pedro.cotovio/Repos/nclustRL/nclustRL/models/model.py", line 136, in forward
+    action_logits = th.sum(avail_actions * intent_vector, dim=1)
+RuntimeError: CUDA out of memory. Tried to allocate 940.00 MiB (GPU 0; 8.00 GiB total capacity; 147.45 MiB already allocated; 239.96 MiB free; 168.00 MiB reserved in total by PyTorch) If reserved memory is >> allocated memory try setting max_split_size_mb to avoid fragmentation.  See documentation for Memory Management and PYTORCH_CUDA_ALLOC_CONF
+
+The above exception was the direct cause of the following exception:
+
+[36mray::PPO.train()[39m (pid=234778, ip=10.211.200.145, repr=PPO)
+  File "/home/pedro.cotovio/Repos/nclustRL/venv/lib/python3.8/site-packages/ray/tune/trainable.py", line 314, in train
+    result = self.step()
+  File "/home/pedro.cotovio/Repos/nclustRL/venv/lib/python3.8/site-packages/ray/rllib/agents/trainer.py", line 885, in step
+    raise e
+  File "/home/pedro.cotovio/Repos/nclustRL/venv/lib/python3.8/site-packages/ray/rllib/agents/trainer.py", line 867, in step
+    result = self.step_attempt()
+  File "/home/pedro.cotovio/Repos/nclustRL/venv/lib/python3.8/site-packages/ray/rllib/agents/trainer.py", line 920, in step_attempt
+    step_results = next(self.train_exec_impl)
+  File "/home/pedro.cotovio/Repos/nclustRL/venv/lib/python3.8/site-packages/ray/util/iter.py", line 756, in __next__
+    return next(self.built_iterator)
+  File "/home/pedro.cotovio/Repos/nclustRL/venv/lib/python3.8/site-packages/ray/util/iter.py", line 783, in apply_foreach
+    for item in it:
+  File "/home/pedro.cotovio/Repos/nclustRL/venv/lib/python3.8/site-packages/ray/util/iter.py", line 783, in apply_foreach
+    for item in it:
+  File "/home/pedro.cotovio/Repos/nclustRL/venv/lib/python3.8/site-packages/ray/util/iter.py", line 843, in apply_filter
+    for item in it:
+  File "/home/pedro.cotovio/Repos/nclustRL/venv/lib/python3.8/site-packages/ray/util/iter.py", line 843, in apply_filter
+    for item in it:
+  File "/home/pedro.cotovio/Repos/nclustRL/venv/lib/python3.8/site-packages/ray/util/iter.py", line 783, in apply_foreach
+    for item in it:
+  File "/home/pedro.cotovio/Repos/nclustRL/venv/lib/python3.8/site-packages/ray/util/iter.py", line 783, in apply_foreach
+    for item in it:
+  File "/home/pedro.cotovio/Repos/nclustRL/venv/lib/python3.8/site-packages/ray/util/iter.py", line 791, in apply_foreach
+    result = fn(item)
+  File "/home/pedro.cotovio/Repos/nclustRL/venv/lib/python3.8/site-packages/ray/rllib/execution/train_ops.py", line 197, in __call__
+    results = policy.learn_on_loaded_batch(
+  File "/home/pedro.cotovio/Repos/nclustRL/venv/lib/python3.8/site-packages/ray/rllib/policy/torch_policy.py", line 554, in learn_on_loaded_batch
+    tower_outputs = self._multi_gpu_parallel_grad_calc(device_batches)
+  File "/home/pedro.cotovio/Repos/nclustRL/venv/lib/python3.8/site-packages/ray/rllib/policy/torch_policy.py", line 1085, in _multi_gpu_parallel_grad_calc
+    raise last_result[0] from last_result[1]
+ValueError: CUDA out of memory. Tried to allocate 940.00 MiB (GPU 0; 8.00 GiB total capacity; 147.45 MiB already allocated; 239.96 MiB free; 168.00 MiB reserved in total by PyTorch) If reserved memory is >> allocated memory try setting max_split_size_mb to avoid fragmentation.  See documentation for Memory Management and PYTORCH_CUDA_ALLOC_CONF
+In tower 0 on device cuda:0
+

@@ -1,0 +1,31 @@
+Failure # 1 (occurred at 2022-03-03_05-06-11)
+Traceback (most recent call last):
+  File "/home/pedro.cotovio/Repos/nclustRL/venv/lib/python3.8/site-packages/ray/tune/trial_runner.py", line 924, in _process_trial
+    results = self.trial_executor.fetch_result(trial)
+  File "/home/pedro.cotovio/Repos/nclustRL/venv/lib/python3.8/site-packages/ray/tune/ray_trial_executor.py", line 787, in fetch_result
+    result = ray.get(trial_future[0], timeout=DEFAULT_GET_TIMEOUT)
+  File "/home/pedro.cotovio/Repos/nclustRL/venv/lib/python3.8/site-packages/ray/_private/client_mode_hook.py", line 105, in wrapper
+    return func(*args, **kwargs)
+  File "/home/pedro.cotovio/Repos/nclustRL/venv/lib/python3.8/site-packages/ray/worker.py", line 1713, in get
+    raise value.as_instanceof_cause()
+ray.exceptions.RayTaskError(RayOutOfMemoryError): [36mray::PPO.train()[39m (pid=225687, ip=10.211.200.145, repr=PPO)
+ray._private.memory_monitor.RayOutOfMemoryError: More than 95% of the memory on node OPOVLS001VI is used (14.86 / 15.63 GB). The top 10 memory consumers are:
+
+PID	MEM	COMMAND
+225687	2.87GiB	ray::PPO
+225766	2.79GiB	ray::RolloutWorker
+225764	2.74GiB	ray::RolloutWorker
+225765	2.67GiB	ray::RolloutWorker
+10131	0.34GiB	/usr/share/code/code --type=renderer --disable-color-correct-rendering --field-trial-handle=15916833
+10352	0.24GiB	/usr/share/code/code --ms-enable-electron-run-as-node /home/pedro.cotovio/.vscode/extensions/ms-pyth
+197366	0.21GiB	/home/pedro.cotovio/Repos/nclustRL/venv/bin/python -m ipykernel_launcher -f /home/pedro.cotovio/.loc
+10387	0.21GiB	/usr/share/code/code --ms-enable-electron-run-as-node /home/pedro.cotovio/.vscode/extensions/ms-pyth
+10458	0.07GiB	/usr/share/code/code --type=renderer --disable-color-correct-rendering --field-trial-handle=15916833
+10197	0.06GiB	/usr/share/code/code --ms-enable-electron-run-as-node --inspect-port=0 /usr/share/code/resources/app
+
+In addition, up to 0.12 GiB of shared memory is currently being used by the Ray object store.
+---
+--- Tip: Use the `ray memory` command to list active objects in the cluster.
+--- To disable OOM exceptions, set RAY_DISABLE_MEMORY_MONITOR=1.
+---
+
