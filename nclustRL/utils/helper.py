@@ -93,7 +93,8 @@ def transform_obs(obs):
         ).transpose(0, 1)
 
         state.nodes[ntype].data.clear()
-
+    
+    state.edata['w'] = state.edata['w'].to(th.float32)
     state.ndata['feat'] = ndata
     obs['state'] = state
 

@@ -3,11 +3,8 @@ import torch
 import os
 from ray import tune
 from ray.tune.schedulers import PopulationBasedTraining
+from ray.tune.stopper import ExperimentPlateauStopper
 import random
-
-
-gpu_count = torch.cuda.device_count()
-cpu_count = os.cpu_count()
 
 
 def explore(config):
@@ -49,18 +46,21 @@ PPO_PBT = PopulationBasedTraining(
             "num_sgd_iter": lambda: random.randint(1, 30),
             # Total SGD batch size across all devices for SGD. This defines the
             # minibatch size within each epoch.
-            "sgd_minibatch_size": lambda: random.randint(128, 16384),
+            "sgd_minibatch_size": lambda: random.randint(128, 512),
             # Number of timesteps collected for each SGD round. This defines the size
             # of each SGD epoch.
-            "train_batch_size": lambda: random.randint(1000, 160000),
+            "train_batch_size": lambda: random.randint(1000, 5000),
         },
         custom_explore_fn=explore)
 
-PPO_TUNE_INIT = {
-    "num_sgd_iter": tune.choice([10, 20, 30]),
-    "sgd_minibatch_size": tune.choice([128, 512, 2048]),
-    "train_batch_size": tune.choice([10000, 20000, 40000])
-}
+STOP_PLATEAU = ExperimentPlateauStopper(
+    metric='episode_reward_mean',
+    std=0.001,
+    top=4,
+    mode='max',
+    patience=5
+
+)
 
 MODEL_DEFAULTS = {
     # === Options for custom models ===
@@ -81,7 +81,7 @@ TRAINER_DEFAULTS: TrainerConfigDict = {
     # === Settings for Rollout Worker processes ===
     # Number of rollout worker actors to create for parallel sampling. Setting
     # this to 0 will force rollouts to be done in the trainer actor.
-    "num_workers": (cpu_count - 1),
+    "num_workers": 4,
     # When `num_workers` > 0, the driver (local_worker; worker-idx=0) does not
     # need an environment. This is because it doesn't have to sample (done by
     # remote_workers; worker_indices > 0) nor evaluate (done by evaluation
@@ -119,7 +119,7 @@ TRAINER_DEFAULTS: TrainerConfigDict = {
     # Initial coefficient for KL divergence.
     "kl_coeff": 0.2,
     # Size of batches collected from each worker.
-    "rollout_fragment_length": int(1024 / (cpu_count - 1)),
+    "rollout_fragment_length": int(1024 / 4),
     # Number of timesteps collected for each SGD round. This defines the size
     # of each SGD epoch.
     "train_batch_size": 1024,
@@ -194,17 +194,7 @@ TRAINER_DEFAULTS: TrainerConfigDict = {
     "env_config": {},
     # If using num_envs_per_worker > 1, whether to create those new envs in
     # remote processes instead of in the same worker. This adds overheads, but
-    # can make sense if your envs can take much time to step / reset
-    # (e.g., for StarCraft). Use this cautiously; overheads are significant.
-    "remote_worker_envs": False,
-    # Timeout that remote workers are waiting when polling environments.
-    # 0 (continue when at least one env is ready) is a reasonable default,
-    # but optimal value could be obtained by measuring your environment
-    # step / reset and model inference perf.
-    "remote_env_batch_wait_ms": 0,
-    # A callable taking the last train results, the base env and the env
-    # context as args and returning a new task to set the env to.
-    # The env must be a `TaskSettableEnv` sub-class for this to work.
+    # can make sense if your envs can take much time to step) to work.
     # See `examples/curriculum_learning.py` for an example.
     "env_task_fn": None,
     # If True, try to render the environment on the local worker or on worker
@@ -364,7 +354,7 @@ TRAINER_DEFAULTS: TrainerConfigDict = {
     # Number of CPUs to allocate per worker.
     "num_cpus_per_worker": 1,
     # Number of GPUs to allocate per worker. This can be fractional.
-    "num_gpus_per_worker": (gpu_count - 0.0001) / (cpu_count - 1),
+    "num_gpus_per_worker": (1 - 0.001) / 4,
     # Any custom Ray resources to allocate per worker.
     "custom_resources_per_worker": {},
     # Number of CPUs to allocate for the trainer. Note: this only takes effect

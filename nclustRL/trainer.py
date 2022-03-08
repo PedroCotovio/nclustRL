@@ -6,6 +6,7 @@ import numpy as np
 import nclustenv
 from nclustenv.version import ENV_LIST
 import ray
+from ray.tune.stopper import Stopper
 from tqdm import tqdm
 import nclustRL
 
@@ -115,9 +116,9 @@ class Trainer:
             metric: Optional[str] = 'episode_reward_mean',
             mode: Optional[str] = 'max',
             checkpoint_freq: Optional[int] = 10,
-            stop: Optional[bool] = True,
+            stop: Optional[Stopper] = None,
             stop_iters: Optional[int] = 100,
-            stop_metric: Optional[float] = 2.5,
+            stop_metric: Optional[float] = 10,
             checkpoint: Optional[str] = None,
             resume: Optional[bool] = False,
             verbose: Optional[int] = 1,
@@ -138,14 +139,14 @@ class Trainer:
 
                 local_dir = path.join(self.save_dir, 'sample_{}'.format(i))
 
-                if stop:
+                if not stop:
                     stop_criteria = {
                         "training_iteration": stop_iters,
                         metric: stop_metric,
                     }
 
                 else:
-                    stop_criteria = None
+                    stop_criteria = stop
 
                 # Update seeds
                 config = self._set_seed(seed)
@@ -165,16 +166,16 @@ class Trainer:
                     *args, **kwargs
                 )
 
-                checkpoints = analysis.get_trial_checkpoints_paths(
+                checkpoint = analysis.get_best_checkpoint(
                     trial=analysis.get_best_trial(
                         metric=metric,
-                        mode=mode), metric=metric)
+                        mode=mode), metric=metric, mode=mode)
 
                 results.append({
                     'config': analysis.get_best_config(metric=metric, mode=mode),
-                    'path': checkpoints[0][0],
-                    'metric': checkpoints[0][1],
-                    'df': analysis.dataframe()
+                    'path': checkpoint,
+                    'metric': analysis.best_result,
+                    'df': analysis.dataframe(metric=metric, mode=mode)
                 })
 
                 best_checkpoint = results[np.argmax([res['metric'] for res in results])]
