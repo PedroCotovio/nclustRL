@@ -21,6 +21,8 @@ from nclustRL.configs.default_configs import DEFAULT_CONFIG
 
 from nclustenv.configs import biclustering, triclustering
 
+from time import perf_counter as counter
+
 
 class Trainer:
 
@@ -209,6 +211,8 @@ class Trainer:
 
     def test(self, n_episodes: int = 100, verbose=True):
 
+        start_time = counter()
+
         n_episodes = int(n_episodes)
 
         env = self._wrap_env(nclustenv.make(self.env, **self.config['env_config']))
@@ -227,7 +231,10 @@ class Trainer:
             if verbose:
                 print('Episode {} of {} done.'.format(i+1, n_episodes))
 
-        return mean(reward), mean(accuracy)
+        end_time = counter()
+        avg_time = (end_time - start_time) / n_episodes
+
+        return mean(reward), mean(accuracy), avg_time
 
     def make_env(self):
 
