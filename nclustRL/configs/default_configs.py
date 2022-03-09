@@ -20,7 +20,7 @@ def explore(config):
 PPO_PBT = PopulationBasedTraining(
         time_attr="time_total_s",
         perturbation_interval=120,
-        resample_probability=0.25,
+        resample_probability=0.0,
         # Specifies the mutations of these hyperparams
         hyperparam_mutations={
             # The GAE (lambda) parameter.
@@ -30,7 +30,7 @@ PPO_PBT = PopulationBasedTraining(
             # Stepsize of SGD.
             "lr": [1e-3, 5e-4, 1e-4, 5e-5, 1e-5],
             # Initial coefficient for KL divergence.
-            "kl_coeff": lambda: random.uniform(0.2, 1),
+            "kl_coeff": lambda: random.uniform(0.3, 1),
             # Coefficient of the value function loss. IMPORTANT: you must tune this if
             # you set vf_share_layers=True inside your model's config.
             "vf_loss_coeff": lambda: random.uniform(0.5, 1.0),
@@ -40,7 +40,7 @@ PPO_PBT = PopulationBasedTraining(
             # scale of the rewards. If your expected V is large, increase this.
             "vf_clip_param": lambda: random.uniform(10, 20),
             # Target value for KL divergence.
-            "kl_target": lambda: random.uniform(0.003, 0.01),
+            "kl_target": lambda: random.uniform(0.003, 0.03),
             # Number of SGD iterations in each outer loop (i.e., number of epochs to
              # execute per train batch).
             "num_sgd_iter": lambda: random.randint(1, 30),
