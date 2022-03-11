@@ -8,12 +8,13 @@ class TrainerConfig:
         
         self._filename = filename
         self._path = path
+        self.obj = None
 
         try:
-            self.obj = self.load()
+            self.load()
 
         except:
-            self.obj = None
+            pass
 
     @property
     def path(self):
@@ -24,12 +25,16 @@ class TrainerConfig:
         with open(self.path + '.pickle', 'rb') as handle:
             b = pickle.load(handle)
 
-        return b
+        self.obj = b
+
+        return self.obj
 
     def save(self, obj):
 
         with open(self.path + '.pickle', 'wb') as handle:
             pickle.dump(obj, handle, protocol=pickle.HIGHEST_PROTOCOL)
+
+        self.obj = obj
 
         return None
 
