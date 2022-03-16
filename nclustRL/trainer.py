@@ -1,6 +1,6 @@
 
 from os import path
-from statistics import mean
+from statistics import mean, stdev
 import numpy as np
 
 import nclustenv
@@ -219,8 +219,12 @@ class Trainer:
 
         accuracy = []
         reward = []
+        time = []
 
         for i in range(n_episodes):
+
+            start_time = counter()
+
             obs = env.reset()
 
             episode_reward, episode_accuracy = self._compute_episode(env, obs)
@@ -228,13 +232,13 @@ class Trainer:
             accuracy.append(episode_accuracy)
             reward.append(episode_reward)
 
+            end_time = counter()
+            time.append(end_time - start_time)
+
             if verbose:
                 print('Episode {} of {} done.'.format(i+1, n_episodes))
 
-        end_time = counter()
-        avg_time = (end_time - start_time) / n_episodes
-
-        return mean(reward), mean(accuracy), avg_time
+        return np.array([[mean(reward), stdev(reward)], [mean(accuracy), stdev(accuracy)], [mean(time), stdev(time)]])
 
     def make_env(self):
 
