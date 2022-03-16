@@ -1,0 +1,24 @@
+Random Agent Basic_v2
+reward = -1.986 +- 0.05
+accuracy = 0.100 +- 0.07
+time = 6.620s +-  0.17
+
+Basic_v2 untunned
+reward = -1.914 +- 0.07
+accuracy = 0.114 +- 0.06
+time = 6.606s +- 0.17
+
+Basic_v2 tunned
+reward = -1.846 +- 0.11
+accuracy = 0.154 +- 0.11
+time = 6.702s +- 0.13
+
+Random Agent Basic_v3
+reward = -0.107 += 0.07
+accuracy = 0.100 +- 0.07
+time = 0.341s +- 0.07
+
+Basic_v3 hypertune
+reward = 0.045 +- 0.17
+accuracy = 0.195 +- 0.17
+time = 0.339s +- 0.03

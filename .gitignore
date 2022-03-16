@@ -4,3 +4,5 @@ venv/
 *.pyc
 
 nclustRL.egg-info/
+
+.DS_Store
