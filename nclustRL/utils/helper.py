@@ -128,6 +128,36 @@ def generate_dummy_obs(batch_size, dim, n):
     return dgl.batch([env.reset()['state'] for _ in range(batch_size)])
 
 
+def precision_round(numbers, digits = 3):
+    '''
+    Parameters:
+    -----------
+    numbers : scalar, 1D , or 2D array(-like)
+    digits: number of digits after decimal point
+    
+    Returns:
+    --------
+    out : same shape as numbers
+    '''
+    import numpy as np
+
+    numbers = np.asarray(np.atleast_2d(numbers))
+    out_array = np.zeros(numbers.shape) # the returning array
+    
+    for dim0 in range(numbers.shape[0]):
+        powers = [int(F"{number:e}".split('e')[1]) for number in numbers[dim0, :]]
+        out_array[dim0, :] = [round(number, -(int(power) - digits))
+                         for number, power in zip(numbers[dim0, :], powers)]
+        
+    # returning the original shape of the `numbers` 
+    if out_array.shape[0] == 1 and out_array.shape[1] == 1:
+        out_array = out_array[0, 0]
+    elif out_array.shape[0] == 1:
+        out_array = out_array[0, :]
+    
+    return out_array
+
+
 def restart_cluster():
     ray.shutdown()
     sleep(0.1)
