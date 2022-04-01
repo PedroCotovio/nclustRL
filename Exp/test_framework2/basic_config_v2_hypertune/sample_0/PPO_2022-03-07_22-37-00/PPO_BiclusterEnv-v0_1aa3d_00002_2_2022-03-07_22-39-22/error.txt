@@ -1,0 +1,79 @@
+Failure # 1 (occurred at 2022-03-08_02-54-39)
+Traceback (most recent call last):
+  File "/home/pgcotovio/repos/nclustRL/venv/lib/python3.8/site-packages/ray/tune/trial_runner.py", line 924, in _process_trial
+    results = self.trial_executor.fetch_result(trial)
+  File "/home/pgcotovio/repos/nclustRL/venv/lib/python3.8/site-packages/ray/tune/ray_trial_executor.py", line 787, in fetch_result
+    result = ray.get(trial_future[0], timeout=DEFAULT_GET_TIMEOUT)
+  File "/home/pgcotovio/repos/nclustRL/venv/lib/python3.8/site-packages/ray/_private/client_mode_hook.py", line 105, in wrapper
+    return func(*args, **kwargs)
+  File "/home/pgcotovio/repos/nclustRL/venv/lib/python3.8/site-packages/ray/worker.py", line 1713, in get
+    raise value.as_instanceof_cause()
+ray.exceptions.RayTaskError(ValueError): [36mray::PPO.train()[39m (pid=982524, ip=10.20.0.204, repr=PPO)
+  File "/home/pgcotovio/repos/nclustRL/venv/lib/python3.8/site-packages/ray/rllib/agents/ppo/ppo_torch_policy.py", line 82, in loss
+    curr_action_dist = dist_class(logits, model)
+  File "/home/pgcotovio/repos/nclustRL/venv/lib/python3.8/site-packages/ray/rllib/models/torch/torch_action_dist.py", line 432, in __init__
+    self.flat_child_distributions = tree.map_structure(
+  File "/home/pgcotovio/repos/nclustRL/venv/lib/python3.8/site-packages/tree/__init__.py", line 510, in map_structure
+    [func(*args) for args in zip(*map(flatten, structures))])
+  File "/home/pgcotovio/repos/nclustRL/venv/lib/python3.8/site-packages/tree/__init__.py", line 510, in <listcomp>
+    [func(*args) for args in zip(*map(flatten, structures))])
+  File "/home/pgcotovio/repos/nclustRL/venv/lib/python3.8/site-packages/ray/rllib/models/torch/torch_action_dist.py", line 433, in <lambda>
+    lambda dist, input_: dist(input_, model), flat_child_distributions,
+  File "/home/pgcotovio/repos/nclustRL/venv/lib/python3.8/site-packages/ray/rllib/models/torch/torch_action_dist.py", line 71, in __init__
+    self.dist = torch.distributions.categorical.Categorical(
+  File "/home/pgcotovio/repos/nclustRL/venv/lib/python3.8/site-packages/torch/distributions/categorical.py", line 64, in __init__
+    super(Categorical, self).__init__(batch_shape, validate_args=validate_args)
+  File "/home/pgcotovio/repos/nclustRL/venv/lib/python3.8/site-packages/torch/distributions/distribution.py", line 55, in __init__
+    raise ValueError(
+ValueError: Expected parameter logits (Tensor of shape (552, 4)) of distribution Categorical(logits: torch.Size([552, 4])) to satisfy the constraint IndependentConstraint(Real(), 1), but found invalid values:
+tensor([[nan, nan, nan, nan],
+        [nan, nan, nan, nan],
+        [nan, nan, nan, nan],
+        ...,
+        [nan, nan, nan, nan],
+        [nan, nan, nan, nan],
+        [nan, nan, nan, nan]], device='cuda:0', grad_fn=<SubBackward0>)
+
+The above exception was the direct cause of the following exception:
+
+[36mray::PPO.train()[39m (pid=982524, ip=10.20.0.204, repr=PPO)
+  File "/home/pgcotovio/repos/nclustRL/venv/lib/python3.8/site-packages/ray/tune/trainable.py", line 314, in train
+    result = self.step()
+  File "/home/pgcotovio/repos/nclustRL/venv/lib/python3.8/site-packages/ray/rllib/agents/trainer.py", line 885, in step
+    raise e
+  File "/home/pgcotovio/repos/nclustRL/venv/lib/python3.8/site-packages/ray/rllib/agents/trainer.py", line 867, in step
+    result = self.step_attempt()
+  File "/home/pgcotovio/repos/nclustRL/venv/lib/python3.8/site-packages/ray/rllib/agents/trainer.py", line 920, in step_attempt
+    step_results = next(self.train_exec_impl)
+  File "/home/pgcotovio/repos/nclustRL/venv/lib/python3.8/site-packages/ray/util/iter.py", line 756, in __next__
+    return next(self.built_iterator)
+  File "/home/pgcotovio/repos/nclustRL/venv/lib/python3.8/site-packages/ray/util/iter.py", line 783, in apply_foreach
+    for item in it:
+  File "/home/pgcotovio/repos/nclustRL/venv/lib/python3.8/site-packages/ray/util/iter.py", line 783, in apply_foreach
+    for item in it:
+  File "/home/pgcotovio/repos/nclustRL/venv/lib/python3.8/site-packages/ray/util/iter.py", line 843, in apply_filter
+    for item in it:
+  File "/home/pgcotovio/repos/nclustRL/venv/lib/python3.8/site-packages/ray/util/iter.py", line 843, in apply_filter
+    for item in it:
+  File "/home/pgcotovio/repos/nclustRL/venv/lib/python3.8/site-packages/ray/util/iter.py", line 783, in apply_foreach
+    for item in it:
+  File "/home/pgcotovio/repos/nclustRL/venv/lib/python3.8/site-packages/ray/util/iter.py", line 783, in apply_foreach
+    for item in it:
+  File "/home/pgcotovio/repos/nclustRL/venv/lib/python3.8/site-packages/ray/util/iter.py", line 791, in apply_foreach
+    result = fn(item)
+  File "/home/pgcotovio/repos/nclustRL/venv/lib/python3.8/site-packages/ray/rllib/execution/train_ops.py", line 197, in __call__
+    results = policy.learn_on_loaded_batch(
+  File "/home/pgcotovio/repos/nclustRL/venv/lib/python3.8/site-packages/ray/rllib/policy/torch_policy.py", line 554, in learn_on_loaded_batch
+    tower_outputs = self._multi_gpu_parallel_grad_calc(device_batches)
+  File "/home/pgcotovio/repos/nclustRL/venv/lib/python3.8/site-packages/ray/rllib/policy/torch_policy.py", line 1085, in _multi_gpu_parallel_grad_calc
+    raise last_result[0] from last_result[1]
+ValueError: Expected parameter logits (Tensor of shape (552, 4)) of distribution Categorical(logits: torch.Size([552, 4])) to satisfy the constraint IndependentConstraint(Real(), 1), but found invalid values:
+tensor([[nan, nan, nan, nan],
+        [nan, nan, nan, nan],
+        [nan, nan, nan, nan],
+        ...,
+        [nan, nan, nan, nan],
+        [nan, nan, nan, nan],
+        [nan, nan, nan, nan]], device='cuda:0', grad_fn=<SubBackward0>)
+In tower 0 on device cuda:0
+

@@ -1,0 +1,22 @@
+from ray.rllib import RolloutWorker
+from ray.rllib.agents.ppo import PPOTorchPolicy
+import nclustenv
+from nclustRL.utils.helper import transform_obs
+from nclustenv.configs.biclustering.binary import base
+from nclustRL.configs.default_configs import DEFAULT_CONFIG
+from gym.wrappers import TransformObservation
+
+def make_env():
+    return TransformObservation(nclustenv.make('BiclusterEnv-v0', **base), transform_obs)
+
+env = make_env()
+
+config = DEFAULT_CONFIG
+config["model"]["max_seq_len"] = 20
+
+rollout_worker = RolloutWorker(
+    env_creator=lambda _: make_env(),
+    policy_config=DEFAULT_CONFIG,
+    policy_spec=PPOTorchPolicy,
+    preprocessor_pref=None
+)

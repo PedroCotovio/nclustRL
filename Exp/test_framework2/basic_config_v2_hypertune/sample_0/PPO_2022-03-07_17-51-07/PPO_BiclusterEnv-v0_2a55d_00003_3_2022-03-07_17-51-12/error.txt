@@ -1,0 +1,54 @@
+Failure # 1 (occurred at 2022-03-07_17-51-18)
+Traceback (most recent call last):
+  File "/home/pgcotovio/repos/nclustRL/venv/lib/python3.8/site-packages/ray/tune/trial_runner.py", line 924, in _process_trial
+    results = self.trial_executor.fetch_result(trial)
+  File "/home/pgcotovio/repos/nclustRL/venv/lib/python3.8/site-packages/ray/tune/ray_trial_executor.py", line 787, in fetch_result
+    result = ray.get(trial_future[0], timeout=DEFAULT_GET_TIMEOUT)
+  File "/home/pgcotovio/repos/nclustRL/venv/lib/python3.8/site-packages/ray/_private/client_mode_hook.py", line 105, in wrapper
+    return func(*args, **kwargs)
+  File "/home/pgcotovio/repos/nclustRL/venv/lib/python3.8/site-packages/ray/worker.py", line 1715, in get
+    raise value
+ray.exceptions.RayActorError: The actor died because of an error raised in its creation task, [36mray::PPO.__init__()[39m (pid=365684, ip=10.20.0.204)
+  File "/home/pgcotovio/repos/nclustRL/venv/lib/python3.8/site-packages/ray/rllib/agents/trainer_template.py", line 102, in __init__
+    Trainer.__init__(self, config, env, logger_creator,
+  File "/home/pgcotovio/repos/nclustRL/venv/lib/python3.8/site-packages/ray/rllib/agents/trainer.py", line 661, in __init__
+    super().__init__(config, logger_creator, remote_checkpoint_dir,
+  File "/home/pgcotovio/repos/nclustRL/venv/lib/python3.8/site-packages/ray/tune/trainable.py", line 121, in __init__
+    self.setup(copy.deepcopy(self.config))
+  File "/home/pgcotovio/repos/nclustRL/venv/lib/python3.8/site-packages/ray/rllib/agents/trainer_template.py", line 113, in setup
+    super().setup(config)
+  File "/home/pgcotovio/repos/nclustRL/venv/lib/python3.8/site-packages/ray/rllib/agents/trainer.py", line 679, in setup
+    self.env_creator = _global_registry.get(ENV_CREATOR, env)
+  File "/home/pgcotovio/repos/nclustRL/venv/lib/python3.8/site-packages/ray/tune/registry.py", line 168, in get
+    return pickle.loads(value)
+  File "/home/pgcotovio/repos/nclustRL/venv/lib/python3.8/site-packages/ray/cloudpickle/cloudpickle.py", line 679, in subimport
+    __import__(name)
+  File "/home/pgcotovio/repos/nclustenv/nclustenv/__init__.py", line 16, in <module>
+    from . import environments, datasets, configs, utils
+  File "/home/pgcotovio/repos/nclustenv/nclustenv/environments/__init__.py", line 2, in <module>
+    from .classic_lr import BiclusterEnv, OfflineBiclusterEnv, TriclusterEnv, OfflineTriclusterEnv
+  File "/home/pgcotovio/repos/nclustenv/nclustenv/environments/classic_lr/__init__.py", line 2, in <module>
+    from .biclusterenv import BiclusterEnv, OfflineBiclusterEnv
+  File "/home/pgcotovio/repos/nclustenv/nclustenv/environments/classic_lr/biclusterenv.py", line 2, in <module>
+    from .base import BaseEnv
+  File "/home/pgcotovio/repos/nclustenv/nclustenv/environments/classic_lr/base.py", line 11, in <module>
+    from nclustenv.utils.spaces import DGLHeteroGraphSpace
+  File "/home/pgcotovio/repos/nclustenv/nclustenv/utils/__init__.py", line 3, in <module>
+    from . import datasets
+  File "/home/pgcotovio/repos/nclustenv/nclustenv/utils/datasets.py", line 7, in <module>
+    from nclustenv.utils.states import State
+  File "/home/pgcotovio/repos/nclustenv/nclustenv/utils/states.py", line 2, in <module>
+    import nclustgen
+  File "/home/pgcotovio/repos/nclustRL/venv/lib/python3.8/site-packages/nclustgen/__init__.py", line 18, in <module>
+    jpype.startJVM(classpath=[os.path.join(dir_path, 'jars/*')])
+  File "/home/pgcotovio/repos/nclustRL/venv/lib/python3.8/site-packages/jpype/_core.py", line 226, in startJVM
+    _jpype.startup(jvmpath, tuple(args),
+  File "/usr/lib/python3.8/importlib/util.py", line 73, in find_spec
+    def find_spec(name, package=None):
+KeyboardInterrupt
+
+During handling of the above exception, another exception occurred:
+
+[36mray::PPO.__init__()[39m (pid=365684, ip=10.20.0.204)
+ray.exceptions.TaskCancelledError: Task: TaskID(ffffffffffffffff0a5a63093ac11eff3826ed5601000000) was cancelled
+

@@ -1,1 +1,8 @@
 venv/
+
+.ipynb_checkpoints
+*.pyc
+
+nclustRL.egg-info/
+
+.DS_Store

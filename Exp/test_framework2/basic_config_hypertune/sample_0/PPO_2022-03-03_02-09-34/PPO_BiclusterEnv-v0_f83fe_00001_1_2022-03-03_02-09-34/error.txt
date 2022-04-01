@@ -1,0 +1,98 @@
+Failure # 1 (occurred at 2022-03-03_04-05-22)
+Traceback (most recent call last):
+  File "/home/pedro.cotovio/Repos/nclustRL/venv/lib/python3.8/site-packages/ray/tune/trial_runner.py", line 924, in _process_trial
+    results = self.trial_executor.fetch_result(trial)
+  File "/home/pedro.cotovio/Repos/nclustRL/venv/lib/python3.8/site-packages/ray/tune/ray_trial_executor.py", line 787, in fetch_result
+    result = ray.get(trial_future[0], timeout=DEFAULT_GET_TIMEOUT)
+  File "/home/pedro.cotovio/Repos/nclustRL/venv/lib/python3.8/site-packages/ray/_private/client_mode_hook.py", line 105, in wrapper
+    return func(*args, **kwargs)
+  File "/home/pedro.cotovio/Repos/nclustRL/venv/lib/python3.8/site-packages/ray/worker.py", line 1713, in get
+    raise value.as_instanceof_cause()
+ray.exceptions.RayTaskError(RuntimeError): [36mray::PPO.train()[39m (pid=215431, ip=10.211.200.145, repr=PPO)
+  File "/home/pedro.cotovio/Repos/nclustRL/venv/lib/python3.8/site-packages/ray/tune/trainable.py", line 314, in train
+    result = self.step()
+  File "/home/pedro.cotovio/Repos/nclustRL/venv/lib/python3.8/site-packages/ray/rllib/agents/trainer.py", line 880, in step
+    raise e
+  File "/home/pedro.cotovio/Repos/nclustRL/venv/lib/python3.8/site-packages/ray/rllib/agents/trainer.py", line 867, in step
+    result = self.step_attempt()
+  File "/home/pedro.cotovio/Repos/nclustRL/venv/lib/python3.8/site-packages/ray/rllib/agents/trainer.py", line 920, in step_attempt
+    step_results = next(self.train_exec_impl)
+  File "/home/pedro.cotovio/Repos/nclustRL/venv/lib/python3.8/site-packages/ray/util/iter.py", line 756, in __next__
+    return next(self.built_iterator)
+  File "/home/pedro.cotovio/Repos/nclustRL/venv/lib/python3.8/site-packages/ray/util/iter.py", line 783, in apply_foreach
+    for item in it:
+  File "/home/pedro.cotovio/Repos/nclustRL/venv/lib/python3.8/site-packages/ray/util/iter.py", line 783, in apply_foreach
+    for item in it:
+  File "/home/pedro.cotovio/Repos/nclustRL/venv/lib/python3.8/site-packages/ray/util/iter.py", line 843, in apply_filter
+    for item in it:
+  File "/home/pedro.cotovio/Repos/nclustRL/venv/lib/python3.8/site-packages/ray/util/iter.py", line 843, in apply_filter
+    for item in it:
+  File "/home/pedro.cotovio/Repos/nclustRL/venv/lib/python3.8/site-packages/ray/util/iter.py", line 783, in apply_foreach
+    for item in it:
+  File "/home/pedro.cotovio/Repos/nclustRL/venv/lib/python3.8/site-packages/ray/util/iter.py", line 783, in apply_foreach
+    for item in it:
+  File "/home/pedro.cotovio/Repos/nclustRL/venv/lib/python3.8/site-packages/ray/util/iter.py", line 783, in apply_foreach
+    for item in it:
+  [Previous line repeated 1 more time]
+  File "/home/pedro.cotovio/Repos/nclustRL/venv/lib/python3.8/site-packages/ray/util/iter.py", line 876, in apply_flatten
+    for item in it:
+  File "/home/pedro.cotovio/Repos/nclustRL/venv/lib/python3.8/site-packages/ray/util/iter.py", line 783, in apply_foreach
+    for item in it:
+  File "/home/pedro.cotovio/Repos/nclustRL/venv/lib/python3.8/site-packages/ray/util/iter.py", line 783, in apply_foreach
+    for item in it:
+  File "/home/pedro.cotovio/Repos/nclustRL/venv/lib/python3.8/site-packages/ray/util/iter.py", line 783, in apply_foreach
+    for item in it:
+  [Previous line repeated 1 more time]
+  File "/home/pedro.cotovio/Repos/nclustRL/venv/lib/python3.8/site-packages/ray/util/iter.py", line 471, in base_iterator
+    yield ray.get(futures, timeout=timeout)
+ray.exceptions.RayTaskError(RuntimeError): [36mray::RolloutWorker.par_iter_next()[39m (pid=215509, ip=10.211.200.145, repr=<ray.rllib.evaluation.rollout_worker.RolloutWorker object at 0x7ff64392dc10>)
+  File "/home/pedro.cotovio/Repos/nclustRL/venv/lib/python3.8/site-packages/ray/util/iter.py", line 1151, in par_iter_next
+    return next(self.local_it)
+  File "/home/pedro.cotovio/Repos/nclustRL/venv/lib/python3.8/site-packages/ray/rllib/evaluation/rollout_worker.py", line 381, in gen_rollouts
+    yield self.sample()
+  File "/home/pedro.cotovio/Repos/nclustRL/venv/lib/python3.8/site-packages/ray/rllib/evaluation/rollout_worker.py", line 757, in sample
+    batches = [self.input_reader.next()]
+  File "/home/pedro.cotovio/Repos/nclustRL/venv/lib/python3.8/site-packages/ray/rllib/evaluation/sampler.py", line 103, in next
+    batches = [self.get_data()]
+  File "/home/pedro.cotovio/Repos/nclustRL/venv/lib/python3.8/site-packages/ray/rllib/evaluation/sampler.py", line 265, in get_data
+    item = next(self._env_runner)
+  File "/home/pedro.cotovio/Repos/nclustRL/venv/lib/python3.8/site-packages/ray/rllib/evaluation/sampler.py", line 656, in _env_runner
+    eval_results = _do_policy_eval(
+  File "/home/pedro.cotovio/Repos/nclustRL/venv/lib/python3.8/site-packages/ray/rllib/evaluation/sampler.py", line 1070, in _do_policy_eval
+    policy.compute_actions_from_input_dict(
+  File "/home/pedro.cotovio/Repos/nclustRL/venv/lib/python3.8/site-packages/ray/rllib/policy/torch_policy.py", line 294, in compute_actions_from_input_dict
+    return self._compute_action_helper(input_dict, state_batches,
+  File "/home/pedro.cotovio/Repos/nclustRL/venv/lib/python3.8/site-packages/ray/rllib/utils/threading.py", line 21, in wrapper
+    return func(self, *a, **k)
+  File "/home/pedro.cotovio/Repos/nclustRL/venv/lib/python3.8/site-packages/ray/rllib/policy/torch_policy.py", line 934, in _compute_action_helper
+    dist_inputs, state_out = self.model(input_dict, state_batches,
+  File "/home/pedro.cotovio/Repos/nclustRL/venv/lib/python3.8/site-packages/ray/rllib/models/modelv2.py", line 244, in __call__
+    res = self.forward(restored, state or [], seq_lens)
+  File "/home/pedro.cotovio/Repos/nclustRL/nclustRL/models/model.py", line 130, in forward
+    self._features = self._hidden_layers(obs)
+  File "/home/pedro.cotovio/Repos/nclustRL/venv/lib/python3.8/site-packages/torch/nn/modules/module.py", line 1102, in _call_impl
+    return forward_call(*input, **kwargs)
+  File "/home/pedro.cotovio/Repos/nclustRL/venv/lib/python3.8/site-packages/torch/nn/modules/container.py", line 141, in forward
+    input = module(input)
+  File "/home/pedro.cotovio/Repos/nclustRL/venv/lib/python3.8/site-packages/torch/nn/modules/module.py", line 1102, in _call_impl
+    return forward_call(*input, **kwargs)
+  File "/home/pedro.cotovio/Repos/nclustRL/nclustRL/models/model.py", line 30, in forward
+    h = self.rgcn(g, h, 'w')
+  File "/home/pedro.cotovio/Repos/nclustRL/venv/lib/python3.8/site-packages/torch/nn/modules/module.py", line 1102, in _call_impl
+    return forward_call(*input, **kwargs)
+  File "/home/pedro.cotovio/Repos/nclustRL/nclustRL/models/pre_train.py", line 59, in forward
+    return self._hidden_layers(graph, feat, edge_weight)
+  File "/home/pedro.cotovio/Repos/nclustRL/venv/lib/python3.8/site-packages/torch/nn/modules/module.py", line 1102, in _call_impl
+    return forward_call(*input, **kwargs)
+  File "/home/pedro.cotovio/Repos/nclustRL/nclustRL/models/pre_train.py", line 28, in forward
+    feat = module(
+  File "/home/pedro.cotovio/Repos/nclustRL/venv/lib/python3.8/site-packages/torch/nn/modules/module.py", line 1102, in _call_impl
+    return forward_call(*input, **kwargs)
+  File "/home/pedro.cotovio/Repos/nclustRL/venv/lib/python3.8/site-packages/dgl/nn/pytorch/hetero.py", line 185, in forward
+    dstdata = self.mods[etype](
+  File "/home/pedro.cotovio/Repos/nclustRL/venv/lib/python3.8/site-packages/torch/nn/modules/module.py", line 1102, in _call_impl
+    return forward_call(*input, **kwargs)
+  File "/home/pedro.cotovio/Repos/nclustRL/venv/lib/python3.8/site-packages/dgl/nn/pytorch/conv/graphconv.py", line 447, in forward
+    rst = rst * norm
+RuntimeError: CUDA out of memory. Tried to allocate 2.00 MiB (GPU 0; 8.00 GiB total capacity; 92.00 MiB already allocated; 44.25 MiB free; 92.00 MiB reserved in total by PyTorch) If reserved memory is >> allocated memory try setting max_split_size_mb to avoid fragmentation.  See documentation for Memory Management and PYTORCH_CUDA_ALLOC_CONF
+

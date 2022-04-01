@@ -1,0 +1,10 @@
+Failure # 1 (occurred at 2022-02-23_18-56-04)
+Traceback (most recent call last):
+  File "/home/pedro.cotovio/Repos/nclustRL/venv/lib/python3.8/site-packages/ray/tune/trial_runner.py", line 932, in _process_trial
+    decision = self._process_trial_result(trial, result)
+  File "/home/pedro.cotovio/Repos/nclustRL/venv/lib/python3.8/site-packages/ray/tune/trial_runner.py", line 981, in _process_trial_result
+    result) or trial.should_stop(flat_result):
+  File "/home/pedro.cotovio/Repos/nclustRL/venv/lib/python3.8/site-packages/ray/tune/trial.py", line 584, in should_stop
+    elif result[criteria] >= stop_value:
+TypeError: '>=' not supported between instances of 'float' and 'NoneType'
+
