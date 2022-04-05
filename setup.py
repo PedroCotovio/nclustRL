@@ -32,7 +32,6 @@ setup(
     url="https://github.com/PedroCotovio/nclustRL",
     project_urls={
         "Bug Tracker": "https://github.com/PedroCotovio/nclustRL/issues",
-        "Documentation": "https://nclustRL.readthedocs.org",
     },
     install_requires=[
         'ray>=1.9',
@@ -62,7 +61,7 @@ setup(
         'Topic :: Scientific/Engineering :: Artificial Intelligence',
         'Topic :: Scientific/Engineering :: Bio-Informatics',
     ],
-    packages=find_packages(),
+    packages=find_packages(exclude=("Exp.*", "Exp")),
     python_requires=">=3.7",
     keywords='biclustring triclustering rl ray rllib torch data nclustRL',
     test_suite='tests',
