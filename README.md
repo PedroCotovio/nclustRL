@@ -8,7 +8,7 @@ Tune. Furthermore, it implements RLlib, a DRL framework that supports distribute
 
 NclustRL implements a trainer API for n-clustering that handles all training tasks for the user; a set 
 of default models and metrics; and other helpful functions. Likewise, it provides a set of default configurations for 
-$n$-clustering tasks available in "configs".
+n-clustering tasks available in "configs".
 
 ![Diagram exemplifying NclustEnv's architecture](diagNclustRL.png)
 
