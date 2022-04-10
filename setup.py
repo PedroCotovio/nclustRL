@@ -1,7 +1,7 @@
 
 from setuptools import setup, find_packages
 import os, fnmatch, re, sys
-from nclustenv.version import VERSION
+from nclustRL.version import VERSION
 
 license = ''
 with open('nclustRL/__init__.py', 'r') as fd:
